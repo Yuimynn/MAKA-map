@@ -1,30 +1,43 @@
-## 📌 Usage Instructions————MAKA-map
+## 📌 Usage Instructions (English)
 
-Before running this project, please follow the steps below to complete data preparation and environment setup:
+Please follow the steps below before running this project:
 
 1. **Download the Dataset**
 
-   * The training and test datasets are larger than **8 GB** and therefore not included directly in the repository.
-   * Please download the full dataset using the link provided in the `Code/dataset` directory.
+   * The dataset required for training and testing is larger than **8 GB** and therefore not provided directly in the repository.
+   * Download the complete dataset using the link provided in the `Code/dataset` directory.
 
-2. **Set Up the Environment**
+2. **Environment Setup**
 
-   * Follow the installation guide in the `order` folder to configure all required dependencies.
+   * Install all dependencies as instructed in the documentation under the `order` directory.
 
-3. **Place the Dataset Properly**
+3. **Dataset Placement**
 
-   * The downloaded dataset must be located in the same root directory as the source code, e.g.:
+   * The downloaded dataset must be stored under `Code/dataset` with the same directory structure as below:
 
      ```
      ├─ Code
-     │   ├─ dataset  (place the downloaded data here)
+     │   ├─ dataset        ← place the downloaded data here
      │   ├─ model
      │   ├─ scripts
-     ...
+     │   ...
      ```
 
 4. **Run the Model**
 
-   * After completing the setup, run the provided command lines to start training or inference.
+   * After setup is completed, run the provided command lines to start training or inference.
 
-> Note: The program will fail to load data if the dataset path or folder structure is incorrect.
+5. **Web Interface & Online Demonstration (Optional)**
+
+   * The `Web` folder contains the frontend pages and backend server implementation (Flask-based) for online prediction and visualization.
+   * Users can launch the Web service to upload feature files, perform inference through the browser, and view the predicted distance maps interactively.
+   * Directory example:
+
+     ```
+     ├─ Web
+     │   ├─ templates      (HTML page templates)
+     │   ├─ static         (CSS/JS assets)
+     │   ...
+     ```
+
+> Note: Incorrect dataset path or folder structure will cause data loading failure.
