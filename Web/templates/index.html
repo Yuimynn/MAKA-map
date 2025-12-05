@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAKA-Mmap</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        body {
+            font-family: "Times New Roman", sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #3498db;
+            color: #ffffff;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .content {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group .rich-text-editor {
+            width: 100%;
+            min-height: 100px;
+            max-width: calc(100% - 22px);
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        .form-group .btn-small {
+            margin-left: 10px;
+            padding: 8px 12px;
+        }
+
+        .result {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 999;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .indent-text {
+            padding-left: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="container" v-loading="isLoading">
+        <div class="header">
+            <h1>MAKA-Mmap——Prediction of Protein Real-Valued distance</h1>
+            <template>
+                <el-button type="text" @click="open">Contact Us</el-button>
+            </template>
+        </div>
+        <form @submit.prevent="submitForm">
+            <div class="content">
+                <div>
+                    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav mr-auto navbar-right">
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="https://github.com/Huhassein/MAKA-Mmap"
+                                        target="_blank">Download</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <br>
+                    </nav>
+                </div>
+                <div class="form-group">
+                    <div class="form-control" style="height:auto; min-height:50px;">
+                        Please upload a .pkl file containing the required protein residue features in the correct
+                        format.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <el-upload class="upload-demo" drag action="" :on-change="handleFileUpload" :limit="1"
+                        :file-list="fileList" :auto-upload="false" accept=".pkl">
+
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">Drop the <strong>.pkl</strong> file here or <em>click to
+                                upload</em></div>
+                        <div slot="tip" class="el-upload__tip">Only one .pkl file is allowed. Please upload the required
+                            residue feature file.</div>
+                    </el-upload>
+                </div>
+
+                <div class="form-group">
+                    <el-button slot="append" type="primary" :disabled="fileList.length === 0"
+                        @click="submitForm">Submit</el-button>
+                </div>
+              <!--  <div v-if="predictionReady">-->
+                    <div class="form-group">
+                        <h4>Output:</h4>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-control" style="height:auto; min-height:50px;">
+                            Here you can visualize the .npy file, as well as download both the .npy file and its
+                            corresponding heatmap image.
+                        </div>
+
+                        <img v-if="pngDownload" :src="'/preview/' + pngDownload" alt="Distance Map"
+                            style="max-width: 100%; margin-top: 20px;">
+                        <div class="form-group d-flex" style="gap: 10px;" v-if="npyDownload && pngDownload">
+                            <a :href="'/download/' + npyDownload" class="btn btn-primary" download>Download npy</a>
+                            <a :href="'/download/' + pngDownload" class="btn btn-primary" download>Download heatmap</a>
+                        </div>
+
+                   <!--  </div>-->
+                </div>
+                <p>
+                <h5>Pre-loaded examples (click on the example to download it):</h5>
+                </p>
+                <div id="accordion">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h5 class="mb-0">
+                                <span class="btn btn-link" data-toggle="collapse" data-target="#collapseOne"
+                                    aria-expanded="true" aria-controls="collapseOne">
+                                    Typical Cases (Test Examples)
+                                </span>
+                            </h5>
+                        </div>
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
+                            data-parent="#accordion">
+                            <div class="card-body">
+                                <div class="item-list">
+                                    <el-button class="badge badge-info"
+                                        onclick="window.location.href='/static/examples/T1025.pkl'">
+                                        Case I: pkl for T1025
+                                    </el-button>
+                                    <el-button class="badge badge-info"
+                                        onclick="window.location.href='/static/examples/T1029.pkl'">
+                                        Case II: pkl for T1029
+                                    </el-button>
+                                    <el-button class="badge badge-info"
+                                        onclick="window.location.href='/static/examples/T1030.pkl'">
+                                        Case III: pkl for T1030
+                                    </el-button>
+                                    <el-button class="badge badge-info"
+                                        onclick="window.location.href='/static/examples/T1033.pkl'">
+                                        Case IV: pkl for T1033
+                                    </el-button>
+
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        <div>
+            <h3>Presentations</h3>
+            <p>MAKA-Mmap provides an online tool for real-valued distance prediction between protein residues. Users can
+                upload pre-extracted feature files in .pkl format for inference and visualization. The following notes
+                may be helpful:</p>
+            <p class="indent-text">· MAKA-Mmap only accepts .pkl files containing protein residue features in a
+                predefined format. Please ensure that the file meets the required structure before uploading. Only one
+                file can be uploaded at a time.</p>
+            <p class="indent-text">· After submission, the system will return a .npy file containing the predicted
+                real-valued distance map, along with a visualized heatmap for easier interpretation.</p>
+            <p class="indent-text">· Prediction time may vary depending on the sequence length and complexity of the
+                input.</p>
+            <p class="indent-text">· You may click on pre-loaded examples to quickly test the prediction functionality
+                without uploading your own file.</p>
+            <p class="indent-text">· If you encounter any issues or have questions, feel free to contact us via the
+                email provided in the top-right corner.</p>
+            <p class="indent-text">· The figure below illustrates the conceptual design and output of the MAKA-Mmap
+                framework.</p>
+        </div>
+        <div class="footer">
+            <img src="{{ url_for('static', filename='picture.jpg') }}" alt="Image" class="img">
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script>
+        window.initialData = {
+            npy: "{{ npy_download if npy_download else '' }}",
+            png: "{{ png_download if png_download else '' }}"
+        };
+    </script>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                isLoading: false,
+                fileList: [],
+                resultMessage: '',
+                npyDownload: '',
+                pngDownload: ''
+            },
+            methods: {
+                open() {
+                    this.$msgbox({
+                        title: 'Email',
+                        message: 'hym@nefu.edu.cn',
+                        showCancelButton: true,
+                        confirmButtonText: 'Copy',
+                        cancelButtonText: 'Close',
+                        beforeClose: (action, instance, done) => {
+                            if (action === 'confirm') {
+                                this.copyToClipboard('hym@nefu.edu.cn');
+                                this.$message({
+                                    type: 'info',
+                                    message: ''
+                                });
+                            }
+                            done();
+                        }
+                    });
+                },
+                handleFileUpload(file, fileList) {
+                    this.fileList = fileList;
+                },
+                submitForm() {
+                    this.isLoading = true;
+                    if (this.fileList.length === 0) {
+                        this.$message.error('Please upload a .pkl file.');
+                        this.isLoading = false;
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('file', this.fileList[0].raw);
+
+                    fetch('/predict', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                        .then(async response => {
+                            const text = await response.text();  // 获取原始返回内容
+                            console.log("", text);  // 打印出来看看究竟返回了什么
+
+                            try {
+                                const data = JSON.parse(text);  // 尝试手动解析 JSON
+                                this.resultMessage = data.resultMessage;
+                                this.npyDownload = data.npy;
+                                this.pngDownload = data.png;
+                                this.predictionReady = true;
+                                this.fileList = []; 
+                            } catch (e) {
+                                console.error("", e);
+                                this.$message.error("" + text.slice(0, 100));
+                            }
+
+                            this.isLoading = false;
+                        })
+                        .catch(error => {
+                            console.error('', error);
+                            this.$message.error('');
+                            this.isLoading = false;
+                        });
+                },
+
+                copyToClipboard(text) {
+                    const textarea = document.createElement("textarea");
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(textarea);
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
