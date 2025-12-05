@@ -1,4 +1,4 @@
-## 📌 Usage Instructions (English)
+## 📌 Usage Instructions
 
 Please follow the steps below before running this project:
 
