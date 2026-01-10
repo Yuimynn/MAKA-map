@@ -4,8 +4,13 @@ Please follow the steps below before running this project:
 
 1. **Download the Dataset**
 
-   * The dataset required for training and testing is larger than **8 GB** and therefore not provided directly in the repository.
-   * Download the complete dataset using the link provided in the `Code/dataset` directory.
+ * Due to GitHub’s file size limit (maximum 25 MB per file), the complete dataset—whose size exceeds **8 GB**—cannot be uploaded directly to this repository.
+ * Therefore, the full dataset has been uploaded to Google Drive. Please download it using the link provided in the `Code/dataset` directory.
+* Dataset download link:
+  (https://drive.google.com/file/d/1tLjykxrj-n2MJvNjlQEXsAXWTxsOSuVx/view?usp=drive_link)
+
+If you want it to sound **more concise**, **more academic**, or **more casual**, I can rewrite it in those styles as well.
+
 
 2. **Environment Setup**
 
