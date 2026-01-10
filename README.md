@@ -7,7 +7,7 @@ Please follow the steps below before running this project:
  * Due to GitHub’s file size limit (maximum 25 MB per file), the complete dataset—whose size exceeds **8 GB**—cannot be uploaded directly to this repository.
  * Therefore, the full dataset has been uploaded to Google Drive. Please download it using the link provided in the `Code/dataset` directory.
 * Dataset download link:
-  (https://drive.google.com/file/d/1tLjykxrj-n2MJvNjlQEXsAXWTxsOSuVx/view?usp=drive_link)
+  (https://drive.google.com/file/d/1tLjykxrj-n2MJvNjlQEXsAXWTxsOSuVx/view?usp=sharing)
 
 If you want it to sound **more concise**, **more academic**, or **more casual**, I can rewrite it in those styles as well.
 
